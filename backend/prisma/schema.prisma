@@ -1,0 +1,202 @@
+// Carchip Vehicle Tracking - Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum DeviceStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum AlertType {
+  GEOFENCE_ENTER
+  GEOFENCE_EXIT
+  SPEED_EXCEEDED
+  LOW_BATTERY
+  DEVICE_OFFLINE
+  MAINTENANCE_DUE
+  HARSH_BRAKING
+  HARSH_ACCELERATION
+  IGNITION_ON
+  IGNITION_OFF
+}
+
+enum MaintenanceType {
+  OIL_CHANGE
+  TIRE_ROTATION
+  BRAKE_INSPECTION
+  AIR_FILTER
+  SPARK_PLUGS
+  TRANSMISSION_SERVICE
+  COOLANT_FLUSH
+  BATTERY_REPLACEMENT
+  GENERAL_INSPECTION
+  OTHER
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  phone         String?   @unique
+  passwordHash  String?
+  role          Role      @default(USER)
+  fcmToken      String?
+  isVerified    Boolean   @default(false)
+  refreshToken  String?
+  avatarUrl     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  devices       Device[]
+  vehicles      Vehicle[]
+  geofences     Geofence[]
+  alerts        Alert[]
+  otps          OTP[]
+
+  @@map("users")
+}
+
+model OTP {
+  id        String   @id @default(uuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("otps")
+}
+
+model Device {
+  id        String       @id @default(uuid())
+  imei      String       @unique
+  name      String?
+  status    DeviceStatus @default(PENDING)
+  lastSeen  DateTime?
+  signal    Int?
+  battery   Int?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicleId String?  @unique
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@map("devices")
+}
+
+model Vehicle {
+  id          String   @id @default(uuid())
+  make        String
+  model       String
+  year        Int
+  plateNumber String
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  device      Device?
+
+  geofences         Geofence[]
+  maintenanceRecords MaintenanceRecord[]
+  alerts            Alert[]
+  trips             TripHistory[]
+
+  @@unique([userId, plateNumber])
+  @@map("vehicles")
+}
+
+model Geofence {
+  id        String   @id @default(uuid())
+  name      String
+  lat       Float
+  lng       Float
+  radius    Float    // meters
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("geofences")
+}
+
+model MaintenanceRecord {
+  id              String          @id @default(uuid())
+  type            MaintenanceType
+  date            DateTime
+  mileage         Int?
+  notes           String?
+  cost            Float?
+  nextDueDate     DateTime?
+  nextDueMileage  Int?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("maintenance_records")
+}
+
+model Alert {
+  id        String    @id @default(uuid())
+  type      AlertType
+  message   String
+  read      Boolean   @default(false)
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  @@map("alerts")
+}
+
+model TripHistory {
+  id        String   @id @default(uuid())
+  startTime DateTime
+  endTime   DateTime?
+  startLat  Float
+  startLng  Float
+  endLat    Float?
+  endLng    Float?
+  distance  Float?   // km
+  duration  Int?     // seconds
+  maxSpeed  Float?
+  avgSpeed  Float?
+  createdAt DateTime @default(now())
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@map("trip_history")
+}

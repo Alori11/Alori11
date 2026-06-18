@@ -1,0 +1,22 @@
+<!-- أضف هذا داخل <dict> في ملف ios/Runner/Info.plist -->
+
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <!-- Reversed Client ID من Google -->
+            <string>com.googleusercontent.apps.1047206584239-ucmoscubpk6plkn6930foc21tlpi5a45</string>
+        </array>
+    </dict>
+</array>
+
+<key>NSCameraUsageDescription</key>
+<string>نحتاج الكاميرا لمسح QR الجهاز</string>
+
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>نحتاج موقعك لتتبع المركبة</string>
+</content>
+</invoke>

@@ -1,17 +1,20 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleAuthService {
   GoogleAuthService._();
   static final GoogleAuthService instance = GoogleAuthService._();
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
+  GoogleSignIn _buildSignIn() => GoogleSignIn(
+        clientId: dotenv.env['GOOGLE_CLIENT_ID'],
+        scopes: ['email', 'profile'],
+      );
 
   Future<String?> signIn() async {
     try {
-      await _googleSignIn.signOut(); // force account picker
-      final account = await _googleSignIn.signIn();
+      final signIn = _buildSignIn();
+      await signIn.signOut(); // force account picker every time
+      final account = await signIn.signIn();
       if (account == null) return null;
       final auth = await account.authentication;
       return auth.idToken;
@@ -22,7 +25,7 @@ class GoogleAuthService {
 
   Future<void> signOut() async {
     try {
-      await _googleSignIn.signOut();
+      await _buildSignIn().signOut();
     } catch (_) {}
   }
 }

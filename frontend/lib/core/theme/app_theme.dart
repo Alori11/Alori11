@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import 'text_styles.dart';
 
 class AppTheme {
   AppTheme._();
 
+  static TextTheme get _cairoTextTheme => GoogleFonts.cairoTextTheme();
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      fontFamily: 'Cairo',
+      textTheme: _cairoTextTheme,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
@@ -23,7 +26,11 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.titleLarge.copyWith(color: Colors.white),
+        titleTextStyle: GoogleFonts.cairo(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       cardTheme: CardTheme(
@@ -73,8 +80,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: AppTextStyles.titleMedium.copyWith(
-            fontFamily: 'Cairo',
+          textStyle: GoogleFonts.cairo(
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
           elevation: 0,
@@ -88,8 +95,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: AppTextStyles.titleMedium.copyWith(
-            fontFamily: 'Cairo',
+          textStyle: GoogleFonts.cairo(
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -97,8 +104,8 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          textStyle: AppTextStyles.bodyMedium.copyWith(
-            fontFamily: 'Cairo',
+          textStyle: GoogleFonts.cairo(
+            fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -117,16 +124,16 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.background,
         selectedColor: AppColors.primary,
-        labelStyle: AppTextStyles.bodySmall.copyWith(fontFamily: 'Cairo'),
+        labelStyle: GoogleFonts.cairo(fontSize: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: AppTextStyles.bodyMedium.copyWith(
+        contentTextStyle: GoogleFonts.cairo(
           color: Colors.white,
-          fontFamily: 'Cairo',
+          fontSize: 14,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -137,8 +144,15 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        titleTextStyle: AppTextStyles.titleLarge.copyWith(fontFamily: 'Cairo'),
-        contentTextStyle: AppTextStyles.bodyMedium.copyWith(fontFamily: 'Cairo'),
+        titleTextStyle: GoogleFonts.cairo(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
+        ),
+        contentTextStyle: GoogleFonts.cairo(
+          fontSize: 14,
+          color: AppColors.textSecondary,
+        ),
       ),
     );
   }
@@ -146,7 +160,7 @@ class AppTheme {
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
-      fontFamily: 'Cairo',
+      textTheme: GoogleFonts.cairoTextTheme(ThemeData.dark().textTheme),
       brightness: Brightness.dark,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
@@ -162,7 +176,11 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: AppTextStyles.titleLarge.copyWith(color: Colors.white),
+        titleTextStyle: GoogleFonts.cairo(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       cardTheme: CardTheme(
@@ -210,8 +228,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(
-            fontFamily: 'Cairo',
+          textStyle: GoogleFonts.cairo(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),

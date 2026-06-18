@@ -16,7 +16,6 @@ extension ContextExtensions on BuildContext {
         content: Text(
           message,
           style: const TextStyle(fontFamily: 'Cairo'),
-          textDirection: TextDirection.rtl,
         ),
         backgroundColor: isError ? Colors.red[700] : Colors.green[700],
         behavior: SnackBarBehavior.floating,

@@ -79,4 +79,12 @@ class AuthRemoteDatasource {
       data: {'email': email},
     );
   }
+
+  Future<AuthResponseModel> loginWithGoogle({required String idToken}) async {
+    final response = await _client.post<Map<String, dynamic>>(
+      '/auth/google',
+      data: {'idToken': idToken},
+    );
+    return AuthResponseModel.fromJson(response.data!);
+  }
 }

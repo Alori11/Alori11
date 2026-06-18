@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/services/google_auth_service.dart';
 import '../data/auth_repository.dart';
 import '../data/models/user_model.dart';
 
@@ -134,6 +135,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
         status: AuthStatus.authenticated,
         user: response.user,
       );
+      return true;
+    } catch (e) {
+      state = AuthState(
+        status: AuthStatus.error,
+        errorMessage: e.toString().replaceAll('Exception: ', ''),
+      );
+      return false;
+    }
+  }
+
+  Future<bool> loginWithGoogle() async {
+    state = state.copyWith(status: AuthStatus.loading, errorMessage: null);
+    try {
+      final idToken = await GoogleAuthService.instance.signIn();
+      if (idToken == null) {
+        state = const AuthState(status: AuthStatus.unauthenticated);
+        return false;
+      }
+      final response = await _repository.loginWithGoogle(idToken: idToken);
+      state = AuthState(status: AuthStatus.authenticated, user: response.user);
       return true;
     } catch (e) {
       state = AuthState(

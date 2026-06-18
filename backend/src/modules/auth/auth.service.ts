@@ -1,22 +1,26 @@
 import bcrypt from 'bcryptjs';
+import { OAuth2Client } from 'google-auth-library';
 import { prisma } from '../../config/database';
 import { redis } from '../../config/redis';
 import { generateTokenPair, verifyRefreshToken } from '../../utils/jwt';
 import { otpService } from '../../services/otp/otp.service';
 import { logger } from '../../utils/logger';
 import {
-  AppError,
   ConflictError,
   NotFoundError,
   UnauthorizedError,
 } from '../../middleware/error.middleware';
+import { env } from '../../config/env';
 import type {
   RegisterDto,
   LoginDto,
   PhoneLoginDto,
   VerifyOTPDto,
   RefreshTokenDto,
+  GoogleLoginDto,
 } from './auth.schema';
+
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 const BCRYPT_ROUNDS = 12;
 const BLACKLIST_PREFIX = 'token:blacklist:';
@@ -250,6 +254,52 @@ class AuthService {
     });
 
     return tokens;
+  }
+
+  /**
+   * Login or register via Google OAuth
+   */
+  async loginWithGoogle(dto: GoogleLoginDto) {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: dto.idToken,
+      audience: env.GOOGLE_CLIENT_ID,
+    }).catch(() => {
+      throw new UnauthorizedError('Invalid Google token');
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload?.email) throw new UnauthorizedError('Could not get email from Google token');
+
+    const { email, name, sub: googleId, picture } = payload;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+    const isNewUser = !user;
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          name: name ?? email.split('@')[0],
+          email,
+          googleId,
+          avatarUrl: picture,
+          isVerified: true,
+        },
+      });
+    } else if (!user.googleId) {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { googleId, avatarUrl: picture ?? user.avatarUrl, isVerified: true },
+      });
+    }
+
+    const tokens = generateTokenPair({ id: user.id, email: user.email, role: user.role });
+    const refreshTokenHash = await bcrypt.hash(tokens.refreshToken, 10);
+    await prisma.user.update({ where: { id: user.id }, data: { refreshToken: refreshTokenHash } });
+
+    logger.info(`Google login: ${email} (new: ${isNewUser})`);
+
+    const { passwordHash: _, refreshToken: __, ...safeUser } = user as any;
+    return { user: safeUser, isNewUser, ...tokens };
   }
 
   /**

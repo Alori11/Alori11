@@ -7,6 +7,7 @@ import type {
   PhoneLoginDto,
   VerifyOTPDto,
   RefreshTokenDto,
+  GoogleLoginDto,
 } from './auth.schema';
 
 export const register = async (
@@ -90,6 +91,21 @@ export const logout = async (
     const { refreshToken: token } = req.body;
     await authService.logout(userId, token);
     sendSuccess(res, null, 'Logged out successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const dto = req.body as GoogleLoginDto;
+    const result = await authService.loginWithGoogle(dto);
+    const message = result.isNewUser ? 'Account created via Google' : 'Google login successful';
+    sendSuccess(res, result, message);
   } catch (error) {
     next(error);
   }

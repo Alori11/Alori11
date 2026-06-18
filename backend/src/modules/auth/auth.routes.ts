@@ -10,6 +10,7 @@ import {
   refreshToken,
   logout,
   getMe,
+  googleLogin,
 } from './auth.controller';
 import {
   registerSchema,
@@ -17,6 +18,7 @@ import {
   phoneLoginSchema,
   verifyOTPSchema,
   refreshTokenSchema,
+  googleLoginSchema,
 } from './auth.schema';
 
 const router = Router();
@@ -69,5 +71,12 @@ router.post('/logout', authMiddleware, logout);
  * @access  Private
  */
 router.get('/me', authMiddleware, getMe);
+
+/**
+ * @route   POST /api/v1/auth/google
+ * @desc    Login or register via Google OAuth
+ * @access  Public
+ */
+router.post('/google', authLimiter, validateBody(googleLoginSchema), googleLogin);
 
 export default router;

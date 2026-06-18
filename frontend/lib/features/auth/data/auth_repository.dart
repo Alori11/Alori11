@@ -94,6 +94,16 @@ class AuthRepository {
     }
   }
 
+  Future<AuthResponseModel> loginWithGoogle({required String idToken}) async {
+    try {
+      final response = await _datasource.loginWithGoogle(idToken: idToken);
+      await _saveSession(response);
+      return response;
+    } catch (e) {
+      throw _handleError(e);
+    }
+  }
+
   Future<void> forgotPassword({required String email}) async {
     try {
       await _datasource.forgotPassword(email: email);

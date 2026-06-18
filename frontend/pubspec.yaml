@@ -47,6 +47,9 @@ dependencies:
   # Icons
   flutter_svg: ^2.0.9
 
+  # Auth
+  google_sign_in: ^6.2.1
+
   # Fonts
   google_fonts: ^6.2.1
 

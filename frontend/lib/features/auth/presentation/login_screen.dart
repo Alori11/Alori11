@@ -11,6 +11,73 @@ import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../domain/auth_provider.dart';
 
+class _GoogleSignInButton extends ConsumerWidget {
+  final bool isLoading;
+  const _GoogleSignInButton({required this.isLoading});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: double.infinity,
+      height: 52,
+      child: OutlinedButton(
+        onPressed: isLoading
+            ? null
+            : () async {
+                final success =
+                    await ref.read(authProvider.notifier).loginWithGoogle();
+                if (context.mounted) {
+                  if (success) {
+                    context.go(AppRoutes.dashboard);
+                  } else {
+                    final error = ref.read(authProvider).errorMessage;
+                    if (error != null) {
+                      context.showSnackBar(error, isError: true);
+                    }
+                  }
+                }
+              },
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Color(0xFFDDDDDD)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          backgroundColor: Colors.white,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Google G logo drawn with text (no image needed)
+            Container(
+              width: 24,
+              height: 24,
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              child: const Text(
+                'G',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF4285F4),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'تسجيل الدخول بـ Google',
+              style: TextStyle(
+                fontFamily: 'Cairo',
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF3C4043),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -278,6 +345,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     const Expanded(child: Divider()),
                   ],
                 ),
+                const SizedBox(height: 16),
+                // Google Sign-In button
+                _GoogleSignInButton(isLoading: isLoading),
                 const SizedBox(height: 20),
                 // Register link
                 Row(

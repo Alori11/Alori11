@@ -36,7 +36,7 @@ class _TripHistoryScreenState extends ConsumerState<TripHistoryScreen> {
       context: context,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      initialDateRange: DateTimeRange(from: state.from, to: state.to),
+      initialDateRange: DateTimeRange(start: state.from, end: state.to),
       locale: const Locale('ar'),
       builder: (context, child) {
         return Theme(

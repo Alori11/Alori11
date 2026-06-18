@@ -4,7 +4,7 @@ import '../constants/app_constants.dart';
 class SecureStorage {
   SecureStorage._();
 
-  static const SecureStorage instance = SecureStorage._();
+  static final SecureStorage instance = SecureStorage._();
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
     aOptions: AndroidOptions(encryptedSharedPreferences: true),

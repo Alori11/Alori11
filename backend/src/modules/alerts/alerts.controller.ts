@@ -28,7 +28,7 @@ export const listAlerts = async (
       req.user!.userId,
       parsed.data as AlertsQueryOptions
     );
-    sendSuccess(res, alerts, 'Alerts retrieved', meta);
+    sendSuccess(res, alerts, 'Alerts retrieved', 200, meta);
   } catch (error) {
     next(error);
   }

@@ -89,7 +89,7 @@ export const getAllUsers = async (
   try {
     const { page, limit, search } = req.query as unknown as PaginationQueryDto;
     const { users, total } = await usersService.getAllUsers(page, limit, search);
-    sendSuccess(res, users, 'Users retrieved', paginationMeta(total, page, limit));
+    sendSuccess(res, users, 'Users retrieved', 200, paginationMeta(total, page, limit));
   } catch (error) {
     next(error);
   }

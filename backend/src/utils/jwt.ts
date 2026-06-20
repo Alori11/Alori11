@@ -15,7 +15,7 @@ export interface DecodedToken extends JwtPayload, TokenPayload {}
 
 export const signAccessToken = (payload: TokenPayload): string => {
   const options: SignOptions = {
-    expiresIn: env.JWT_EXPIRES_IN as string,
+    expiresIn: env.JWT_EXPIRES_IN as any,
     algorithm: 'HS256',
     issuer: 'carchip-api',
     audience: 'carchip-client',
@@ -25,7 +25,7 @@ export const signAccessToken = (payload: TokenPayload): string => {
 
 export const signRefreshToken = (payload: RefreshTokenPayload): string => {
   const options: SignOptions = {
-    expiresIn: env.JWT_REFRESH_EXPIRES_IN as string,
+    expiresIn: env.JWT_REFRESH_EXPIRES_IN as any,
     algorithm: 'HS256',
     issuer: 'carchip-api',
     audience: 'carchip-client',

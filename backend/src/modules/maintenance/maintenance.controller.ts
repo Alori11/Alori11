@@ -27,7 +27,7 @@ export const listRecords = async (
   try {
     const query = req.query as unknown as MaintenanceQueryDto;
     const { records, meta } = await maintenanceService.listRecords(req.user!.userId, query);
-    sendSuccess(res, records, 'Maintenance records retrieved', meta);
+    sendSuccess(res, records, 'Maintenance records retrieved', 200, meta);
   } catch (error) {
     next(error);
   }

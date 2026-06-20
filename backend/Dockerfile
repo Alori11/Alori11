@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install dependencies first (better layer caching)
 COPY package*.json ./
-RUN npm ci --include=dev
+RUN npm install
 
 # Copy source
 COPY tsconfig.json ./
